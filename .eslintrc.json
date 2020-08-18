@@ -1,0 +1,47 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 8
+    },
+    "env": {
+        "es6": true,
+        "node": true
+    },
+    "extends": "eslint:recommended",
+    "ignorePatterns": "*.min.js",
+    "rules": {
+        "indent": ["warn", "tab", {
+            "SwitchCase": 1
+        }],
+        "no-unused-vars": [
+            "warn",
+            {
+                "vars": "all",
+                "args": "none",
+                "ignoreRestSiblings": false
+            }
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "max-len": [
+            "warn",
+            {
+                "code": 100,
+                "tabWidth": 4,
+                "ignoreStrings": true
+            }
+        ],
+        "eol-last": [
+            "warn",
+            "always"
+        ],
+        "no-trailing-spaces": [
+            "warn"
+        ],
+        "comma-dangle": [
+            "warn",
+            "only-multiline"
+        ]
+    }
+}

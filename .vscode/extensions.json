@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "stylelint.vscode-stylelint",
+        "dbaeumer.vscode-eslint",
+        "github.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "eg2.vscode-npm-script",
+        "christian-kohler.npm-intellisense",
+        "rvest.vs-code-prettier-eslint",
+        "octref.vetur",
+        "visualstudioexptteam.vscodeintellicode"
+    ]
+}
