@@ -4,7 +4,9 @@
       "target_name": "virplugs-audioengine",
       "cflags!": [ "-fno-exceptions" ],
       "cflags_cc!": [ "-fno-exceptions" ],
-      "sources": [ "hello.cc" ],
+      "sources": [
+		  "<!@(node -p \"require('fs').readdirSync('./src').map(f=>'./src/'+f).join(' ')\")",
+	   ],
       'xcode_settings': {
           'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
           'CLANG_CXX_LIBRARY': 'libc++',
@@ -15,18 +17,20 @@
       },
       "include_dirs": [
         "<!@(node -p \"require('node-addon-api').include\")",
-        "./deps/rtaudio"
+        "./deps/rtaudio",
+        "./deps/libsndfile/src",
+        "./deps"
       ],
       #'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ],
-      'dependencies': ["rtaudio"],
-      
+      'dependencies': ["rtaudio", "libsndfile"],
+
       'conditions': [
           ['OS=="mac"', {
             'cflags+': ['-fvisibility=hidden'],
             'xcode_settings': {
             'GCC_SYMBOLS_PRIVATE_EXTERN': 'YES', # -fvisibility=hidden
             }
-        }]
+        }],
       ],
     },
     {
@@ -58,21 +62,39 @@
                     'MACOSX_DEPLOYMENT_TARGET': '10.7',
                 },
           }],
-      ],    
+      ],
 
       "include_dirs": [
           './deps/rtaudio',
           './deps/rtaudio/include',
       ],
 
-        "sources": [ 
+        "sources": [
             "deps/rtaudio/RtAudio.cpp",
-            "deps/rtaudio/rtaudio_c.cpp", 
-            "deps/rtaudio/include/asio.cpp", 
-            "deps/rtaudio/include/asiodrivers.cpp", 
-            "deps/rtaudio/include/asiolist.cpp", 
-            "deps/rtaudio/include/iasiothiscallresolver.cpp", 
+            "deps/rtaudio/rtaudio_c.cpp",
+            "deps/rtaudio/include/asio.cpp",
+            "deps/rtaudio/include/asiodrivers.cpp",
+            "deps/rtaudio/include/asiolist.cpp",
+            "deps/rtaudio/include/iasiothiscallresolver.cpp",
         ],
+    },
+	{
+        "target_name": "libsndfile",
+        'type': 'static_library',
+        "cflags!": [ "-fno-exceptions" ],
+        "cflags_cc!": [ "-fno-exceptions" ],
+
+      "include_dirs": [
+          './deps/libsndfile/src',
+          './deps',
+      ],
+
+      'sources' : [ "<!@(node -p \"require('fs').readdirSync('./deps/libsndfile/src').filter(f=>!f.startsWith('test_')).map(f=>'./deps/libsndfile/src/'+f).join(' ')\
+	  + ' ' + require('fs').readdirSync('./deps/libsndfile/src/ALAC').map(f=>'./deps/libsndfile/src/ALAC/'+f).join(' ')\
+	  + ' ' + require('fs').readdirSync('./deps/libsndfile/src/G72x').map(f=>'./deps/libsndfile/src/G72x/'+f).join(' ')\
+	  + ' ' + require('fs').readdirSync('./deps/libsndfile/src/GSM610').map(f=>'./deps/libsndfile/src/GSM610/'+f).join(' ')\")",
+				],
+
     }
   ]
 }
