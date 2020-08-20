@@ -53,6 +53,12 @@
                         "-ldsound.lib",
                     ]
                 },
+				'sources': [
+					"deps/rtaudio/include/asio.cpp",
+					"deps/rtaudio/include/asiodrivers.cpp",
+					"deps/rtaudio/include/asiolist.cpp",
+					"deps/rtaudio/include/iasiothiscallresolver.cpp",
+				]
           }],
           ['OS=="mac"', {
               'defines': [ '__MACOSX_CORE__' ],
@@ -72,10 +78,6 @@
         "sources": [
             "deps/rtaudio/RtAudio.cpp",
             "deps/rtaudio/rtaudio_c.cpp",
-            "deps/rtaudio/include/asio.cpp",
-            "deps/rtaudio/include/asiodrivers.cpp",
-            "deps/rtaudio/include/asiolist.cpp",
-            "deps/rtaudio/include/iasiothiscallresolver.cpp",
         ],
     },
 	{
