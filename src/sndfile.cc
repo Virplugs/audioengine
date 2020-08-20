@@ -13,14 +13,27 @@ Napi::Value readAudioFileWaveform(const Napi::CallbackInfo &info) {
 	SNDFILE *infile = NULL;
 	SF_INFO sfinfo;
 
+	const Napi::Env env = info.Env();
+
+	if (info.Length() < 2) {
+		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+		return env.Null();
+	}
+
+	if (!info[0].IsString() || !info[1].IsNumber()) {
+		Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
+		return env.Null();
+	}
+
 	memset(&sfinfo, 0, sizeof(sfinfo));
 
-	const char *filename = info[0].As<Napi::String>().Utf8Value().c_str();
+	const std::string filename = info[0].As<Napi::String>().Utf8Value();
 	const int window = info[1].As<Napi::Number>().Int32Value();
 
-	if ((infile = sf_open(filename, SFM_READ, &sfinfo)) == NULL) {
-		// printf("Not able to open input file %s.\n", infilename);
-		// puts(sf_strerror(NULL));
+	printf("filename: '%s'\n", filename.c_str());
+
+	if ((infile = sf_open(filename.c_str(), SFM_READ, &sfinfo)) == NULL) {
+		Napi::Error::New(info.Env(), sf_strerror(NULL)).ThrowAsJavaScriptException();
 		return info.Env().Null();
 	};
 
@@ -68,15 +81,13 @@ Napi::Value readAudioFileWaveform(const Napi::CallbackInfo &info) {
 Napi::Value readAudioFileInfo(const Napi::CallbackInfo &info) {
 	SNDFILE *infile = NULL;
 	SF_INFO sfinfo;
-	int full_precision = 0;
 
 	memset(&sfinfo, 0, sizeof(sfinfo));
 
-	const char *filename = info[0].As<Napi::String>().Utf8Value().c_str();
+	const std::string filename = info[0].As<Napi::String>().Utf8Value();
 
-	if ((infile = sf_open(filename, SFM_READ, &sfinfo)) == NULL) {
-		// printf("Not able to open input file %s.\n", infilename);
-		// puts(sf_strerror(NULL));
+	if ((infile = sf_open(filename.c_str(), SFM_READ, &sfinfo)) == NULL) {
+		Napi::Error::New(info.Env(), sf_strerror(NULL)).ThrowAsJavaScriptException();
 		return info.Env().Null();
 	};
 
