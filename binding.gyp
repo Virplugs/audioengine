@@ -5,7 +5,7 @@
       "cflags!": [ "-fno-exceptions" ],
       "cflags_cc!": [ "-fno-exceptions" ],
       "sources": [
-		  "<!@(node -p \"require('fs').readdirSync('./src').map(f=>'./src/'+f).join(' ')\")",
+		  "<!@(node -p \"require('glob').sync('./src/**/*.cc').join(' ')\")",
 	   ],
       'xcode_settings': {
           'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
@@ -16,13 +16,14 @@
           'VCCLCompilerTool': { 'ExceptionHandling': 1 },
       },
       "include_dirs": [
-        "<!@(node -p \"require('node-addon-api').include\")",
+        "<!@(node -p \"require('node-addon-api').include.replace(/\\\\/g, '/')\")",
         "./deps/rtaudio",
+        "./deps/rtaudio/include",
         "./deps/libsndfile/src",
         "./deps"
       ],
       #'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ],
-      'dependencies': ["rtaudio", "libsndfile"],
+      'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")", "rtaudio", "libsndfile"],
 
       'conditions': [
           ['OS=="mac"', {

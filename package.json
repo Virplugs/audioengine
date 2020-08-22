@@ -2,9 +2,10 @@
   "name": "@virplugs/audioengine",
   "version": "0.0.1",
   "description": "The Virplugs audio engine",
+  "main": "index.js",
   "dependencies": {
-    "bindings": "~1.2.1",
-    "node-addon-api": "^1.0.0"
+    "bindings": "~1.5.0",
+    "node-addon-api": "^3.0.1"
   },
   "scripts": {
     "test": "node test.js",
@@ -12,6 +13,7 @@
   },
   "gypfile": true,
   "devDependencies": {
-    "eslint": "^7.7.0"
+    "eslint": "^7.7.0",
+    "glob": "^7.1.6"
   }
 }
