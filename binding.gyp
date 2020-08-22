@@ -16,7 +16,7 @@
           'VCCLCompilerTool': { 'ExceptionHandling': 1 },
       },
       "include_dirs": [
-        "<!@(node -p \"require('node-addon-api').include.replace(/\\\\/g, '/')\")",
+        "<!@(node -p 'require(\"node-addon-api\").include.replace(/\\\\/g, \"/\")')",
         "./deps/rtaudio",
         "./deps/rtaudio/include",
         "./deps/libsndfile/src",
@@ -68,6 +68,11 @@
                     'CLANG_CXX_LIBRARY': 'libc++',
                     'MACOSX_DEPLOYMENT_TARGET': '10.7',
                 },
+		'link_settings': {
+			'libraries': [
+                '$(SDKROOT)/System/Library/Frameworks/CoreAudio.framework',
+			]
+		}
           }],
       ],
 
