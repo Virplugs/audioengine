@@ -3,17 +3,26 @@
   "version": "0.0.1",
   "description": "The Virplugs audio engine",
   "main": "index.js",
+  "license": "GPL-3.0-only",
+  "repository": {
+	"type": "git",
+	"url": "https://github.com/virplugs/audioengine.git"
+  },
   "dependencies": {
     "bindings": "~1.5.0",
     "node-addon-api": "^3.0.1"
   },
   "scripts": {
+    "postinstall": "virplugs-check-licenses",
     "test": "node test.js",
-    "build": "node-gyp rebuild"
+    "build": "node-gyp rebuild",
+    "check-licenses": "virplugs-check-licenses"
   },
   "gypfile": true,
   "devDependencies": {
+    "chalk": "^4.1.0",
     "eslint": "^7.7.0",
-    "glob": "^7.1.6"
+    "glob": "^7.1.6",
+    "@virplugs/license-checker": "github:virplugs/license-checker#master"
   }
 }
