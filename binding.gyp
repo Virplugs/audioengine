@@ -16,8 +16,6 @@
           'VCCLCompilerTool': { 'ExceptionHandling': 1 },
       },
       "include_dirs": [
-        #"<!@(node -p \"require('node-addon-api').include\")",
-		"./node_modules/node-addon-api",
 		"./deps/rtaudio",
         "./deps/rtaudio/include",
         "./deps/libsndfile/src",
@@ -33,6 +31,16 @@
             'GCC_SYMBOLS_PRIVATE_EXTERN': 'YES', # -fvisibility=hidden
             }
         }],
+		['OS=="win"', {
+			"include_dirs": [
+				"<!@(node -p \"require('node-addon-api').include.replace(/\\\\/g, '/')\")",
+			]
+		}],
+		['OS!="win"', {
+			"include_dirs": [
+				"<!@(node -p \"require('node-addon-api').include",
+			]
+		}]
       ],
     },
     {
