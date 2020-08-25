@@ -38,7 +38,7 @@
 		}],
 		['OS!="win"', {
 			"include_dirs": [
-				"<!@(node -p \"require('node-addon-api').include",
+				"<!@(node -p \"require('node-addon-api').include\")",
 			]
 		}]
       ],
