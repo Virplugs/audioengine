@@ -1,28 +1,20 @@
 #include <iostream>
 #include <vector>
 
-#include "events.hh"
 #include "audioengine.hh"
+#include "events.hh"
+#include "transport.hh"
 
 #include <RtAudio.h>
 #include <napi.h>
 
 int saw(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime,
         RtAudioStreamStatus status, void *userData) {
-	/*unsigned int i, j;
-	double *buffer = (double *)outputBuffer;
-	double *lastValues = (double *)userData;
-	if (status)
-		std::cout << "Stream underflow detected!" << std::endl;
-	// Write interleaved audio data.
-	for (i = 0; i < nBufferFrames; i++) {
-		for (j = 0; j < 2; j++) {
-			*buffer++ = lastValues[j];
-			lastValues[j] += 0.005 * (j + 1 + (j * 0.1));
-			if (lastValues[j] >= 1.0)
-				lastValues[j] -= 2.0;
-		}
-	}*/
+	if (activeTransport == nullptr)
+		return 0;
+
+	activeTransport->loop((double *)outputBuffer, (double *)inputBuffer, nBufferFrames, streamTime);
+
 	return 0;
 }
 
@@ -67,7 +59,8 @@ Napi::Value startAudioEngine(const Napi::CallbackInfo &info) {
 	}
 
 	if (dac != nullptr) {
-		Napi::Error::New(env, "Audio Engine already started. Stop first.").ThrowAsJavaScriptException();
+		Napi::Error::New(env, "Audio Engine already started. Stop first.")
+		    .ThrowAsJavaScriptException();
 		return Napi::Boolean::New(env, false);
 	}
 
@@ -124,4 +117,3 @@ Napi::Value stopAudioEngine(const Napi::CallbackInfo &info) {
 	}
 	return Napi::Boolean::New(info.Env(), true);
 }
-

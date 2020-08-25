@@ -45,7 +45,7 @@ class ReadAudioFileInfoWorker : public Napi::AsyncWorker {
 		try {
 		Callback().Call({Env().Null(), obj});
 		} catch(Napi::Error &e) {
-			printf("bladibla\n");
+			printf("Error: %s\n", e.Message().c_str());
 		}
 	}
 

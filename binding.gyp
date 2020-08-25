@@ -68,6 +68,7 @@
 					"deps/rtaudio/include/asiodrivers.cpp",
 					"deps/rtaudio/include/asiolist.cpp",
 					"deps/rtaudio/include/iasiothiscallresolver.cpp",
+					"deps/rtaudio/gettimeofday_win.cpp"
 				]
           }],
           ['OS=="mac"', {
@@ -94,6 +95,7 @@
             "deps/rtaudio/RtAudio.cpp",
             "deps/rtaudio/rtaudio_c.cpp",
         ],
+		'defines': [ 'HAVE_GETTIMEOFDAY' ],
     },
 	{
         "target_name": "libsndfile",

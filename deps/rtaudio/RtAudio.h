@@ -710,7 +710,11 @@ class S24 {
 #pragma pack(pop)
 
 #if defined( HAVE_GETTIMEOFDAY )
-  #include <sys/time.h>
+  #if defined(_WIN32)
+    int gettimeofday(struct timeval *tp, struct timezone *tzp);
+  #else
+    #include <sys/time.h>
+  #endif
 #endif
 
 #include <sstream>

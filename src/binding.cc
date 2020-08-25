@@ -1,5 +1,9 @@
 #include <napi.h>
 
+#include "track.hh"
+#include "audioevent.hh"
+#include "transport.hh"
+
 Napi::Object getDeviceInfo(const Napi::CallbackInfo &info);
 Napi::Value readAudioFileInfo(const Napi::CallbackInfo &info);
 Napi::Value readAudioFileWaveform(const Napi::CallbackInfo &info);
@@ -26,6 +30,11 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 	            Napi::Function::New(env, setEventsCallback));
 	exports.Set(Napi::String::New(env, "requestLatencyInfo"),
 	            Napi::Function::New(env, requestLatencyInfo));
+
+	Track::Init(env, exports);
+	AudioEvent::Init(env, exports);
+	Transport::Init(env, exports);
+
 	return exports;
 }
 

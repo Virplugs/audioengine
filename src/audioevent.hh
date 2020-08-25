@@ -1,0 +1,34 @@
+#pragma once
+
+#include <vector>
+#include <string>
+#include <napi.h>
+#include <sndfile.h>
+
+class AudioEvent : public Napi::ObjectWrap<AudioEvent> {
+	public:
+	  static Napi::Object Init(Napi::Env env, Napi::Object exports);
+
+	  AudioEvent(const Napi::CallbackInfo &info);
+
+	  virtual void Finalize(Napi::Env env) override;
+
+	  int render(double *outputBuffer, double *inputBuffer, unsigned int nBufferFrames, unsigned int nOffsetFrames);
+
+	  double duration;
+	  unsigned long totalFrames;
+	  unsigned long lastFrameOffset;
+
+	protected:
+	  std::string name, filename;
+
+	private:
+	  Napi::Value GetName(const Napi::CallbackInfo &info);
+	  void SetName(const Napi::CallbackInfo &info, const Napi::Value &value);
+	  Napi::Value GetLastFrameOffset(const Napi::CallbackInfo &info);
+	  Napi::Value GetDuration(const Napi::CallbackInfo &info);
+	  Napi::Value GetTotalFrames(const Napi::CallbackInfo &info);
+
+	  SF_INFO sfinfo;
+	  SNDFILE *infile = NULL;
+      };
