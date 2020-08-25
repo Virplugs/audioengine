@@ -13,7 +13,14 @@
           'MACOSX_DEPLOYMENT_TARGET': '10.7',
       },
       'msvs_settings': {
-          'VCCLCompilerTool': { 'ExceptionHandling': 1 },
+          'VCCLCompilerTool': {
+			  'ExceptionHandling': 1,
+			  'WarningLevel': 4,
+			  'DisableSpecificWarnings': [
+				  '4458',
+				  '4100'
+			  ]
+		   },
       },
       "include_dirs": [
 		"./deps/rtaudio",
