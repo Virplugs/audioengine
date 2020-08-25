@@ -11,8 +11,8 @@ class Track;
 
 struct ScheduledTrackEvent {
 	ScheduledTrackEvent(unsigned long long time, AudioEvent *event,
-	                           bool triggerOnce = false,
-	                           Napi::Object *JSAudioEvent = nullptr);
+	                    const Napi::Object &JSAudioEvent, bool triggerOnce = false);
+	ScheduledTrackEvent(unsigned long long time, AudioEvent *event, bool triggerOnce = false);
 	ScheduledTrackEvent(const ScheduledTrackEvent &);
 
 	~ScheduledTrackEvent();

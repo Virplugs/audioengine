@@ -76,7 +76,7 @@ class ReadAudioFileWaveformWorker : public Napi::AsyncWorker {
 		for (unsigned int i = 0; i < cache.size(); i++) {
 			Napi::Array jsChannel = Napi::Array::New(Env(), cache[i].size());
 
-			for (int j = 0; j < cache[i].size(); j++) {
+			for (unsigned int j = 0; j < cache[i].size(); j++) {
 				Napi::Object tuple = Napi::Object::New(Env());
 				tuple.Set("max", std::get<0>(cache[i][j]));
 				tuple.Set("min", std::get<1>(cache[i][j]));

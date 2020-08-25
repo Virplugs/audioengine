@@ -1,6 +1,8 @@
 #include "transport.hh"
 #include "audioengine.hh"
 
+#include <cmath>
+
 Napi::Value setActiveTransport(const Napi::CallbackInfo &info);
 
 Transport *activeTransport = nullptr;
@@ -19,7 +21,7 @@ Napi::Object Transport::Init(Napi::Env env, Napi::Object exports) {
 }
 
 Transport::Transport(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Transport>(info) {
-	Napi::Env env = info.Env();
+	//Napi::Env env = info.Env();
 }
 
 Napi::Value Transport::GetBPM(const Napi::CallbackInfo &info) {
