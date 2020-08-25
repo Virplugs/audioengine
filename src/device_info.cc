@@ -38,7 +38,7 @@ Napi::Object getDeviceInfo(const Napi::CallbackInfo &info) {
 				devobj.Set("preferredSampleRate", dinfo.preferredSampleRate);
 
 				Napi::Array sampleRates = Napi::Array::New(info.Env(), dinfo.sampleRates.size());
-				for (int i = 0; i < dinfo.sampleRates.size(); i++) {
+				for (unsigned int i = 0; i < dinfo.sampleRates.size(); i++) {
 					sampleRates[i] = dinfo.sampleRates[i];
 				}
 				devobj.Set("sampleRates", sampleRates);

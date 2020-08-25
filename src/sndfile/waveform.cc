@@ -73,7 +73,7 @@ class ReadAudioFileWaveformWorker : public Napi::AsyncWorker {
 	void OnOK() override {
 		Napi::Array jsCache = Napi::Array::New(Env(), cache.size());
 
-		for (int i = 0; i < cache.size(); i++) {
+		for (unsigned int i = 0; i < cache.size(); i++) {
 			Napi::Array jsChannel = Napi::Array::New(Env(), cache[i].size());
 
 			for (int j = 0; j < cache[i].size(); j++) {

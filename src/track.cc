@@ -89,9 +89,10 @@ void Track::SetOutputChannels(const Napi::CallbackInfo &info, const Napi::Value 
 }
 
 Napi::Value Track::JS_playAudioEvent(const Napi::CallbackInfo &info) {
+	Napi::Object obj = info[0].As<Napi::Object>();
 	auto s = ScheduledTrackEvent(transport->frameCount + 256,
 	                             AudioEvent::Unwrap(info[0].As<Napi::Object>()), true,
-	                             &info[0].As<Napi::Object>());
+	                             &obj);
 	this->scheduleTrackEvent(s);
 	return info.Env().Undefined();
 }
@@ -171,7 +172,7 @@ void Track::cleanupScheduledTrackEvents() {
 }
 
 int Track::process(double *outputBuffer, double *inputBuffer, unsigned int nBufferFrames) {
-	unsigned int sampleRate = dac->getStreamSampleRate();
+	//unsigned int sampleRate = dac->getStreamSampleRate();
 
 	ScheduledTrackEvent *currentTrackEvent = this->trackEvents;
 
@@ -210,14 +211,14 @@ ScheduledTrackEvent::ScheduledTrackEvent(unsigned long long time, AudioEvent *ev
 	if (JSAudioEvent != nullptr) {
 		audioEventJS = Napi::Reference<Napi::Object>::New(*JSAudioEvent, 1);
 	} else {
-		audioEventJS = Napi::Reference<Napi::Object>::Reference();
+		audioEventJS = Napi::Reference<Napi::Object>();
 	}
 }
 
 ScheduledTrackEvent::ScheduledTrackEvent(const ScheduledTrackEvent &e)
-    : time(e.time), event(e.event), triggerOnce(e.triggerOnce), prev(e.prev), next(e.next) {
+    : time(e.time), event(e.event), next(e.next), prev(e.prev), triggerOnce(e.triggerOnce) {
 	if (e.audioEventJS.IsEmpty()) {
-		audioEventJS = Napi::Reference<Napi::Object>::Reference();
+		audioEventJS = Napi::Reference<Napi::Object>();
 	} else {
 		audioEventJS = Napi::Reference<Napi::Object>::New(e.audioEventJS.Value(), 1);
 	}
