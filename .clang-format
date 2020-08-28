@@ -5,3 +5,4 @@ UseTab: ForIndentation
 ColumnLimit: 100
 AllowShortBlocksOnASingleLine: false
 AllowShortFunctionsOnASingleLine: false
+SortIncludes: false

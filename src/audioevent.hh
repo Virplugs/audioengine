@@ -15,9 +15,9 @@ class AudioEvent : public Napi::ObjectWrap<AudioEvent> {
 
 	  int render(double *outputBuffer, double *inputBuffer, unsigned int nBufferFrames, unsigned int nOffsetFrames);
 
-	  double duration;
-	  unsigned long totalFrames;
-	  unsigned long lastFrameOffset;
+	  double duration = 0.0;
+	  unsigned long totalFrames = 1;
+	  unsigned long lastFrameOffset = 0;
 
 	protected:
 	  std::string name, filename;

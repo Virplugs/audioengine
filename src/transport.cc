@@ -2,17 +2,22 @@
 #include "audioengine.hh"
 
 #include <cmath>
+#include <algorithm>
 
 Napi::Value setActiveTransport(const Napi::CallbackInfo &info);
 
 Transport *activeTransport = nullptr;
 
 Napi::Object Transport::Init(Napi::Env env, Napi::Object exports) {
-	exports.Set("Transport", DefineClass(env, "Transport",
-		{
-			InstanceAccessor("bpm", &Transport::GetBPM, &Transport::SetBPM),
-			InstanceAccessor("tracks", &Transport::GetTracks, &Transport::SetTracks),
-		}));
+	exports.Set("NativeTransport",
+	            DefineClass(env, "NativeTransport",
+	                        {
+	                            InstanceAccessor("bpm", &Transport::GetBPM, &Transport::SetBPM),
+	                            InstanceAccessor("masterTrack", &Transport::GetMasterTrack,
+	                                             &Transport::SetMasterTrack),
+	                            InstanceAccessor("cueTrack", &Transport::GetCueTrack,
+	                                             &Transport::SetCueTrack),
+	                        }));
 
 	exports.Set(Napi::String::New(env, "setActiveTransport"),
 	            Napi::Function::New(env, setActiveTransport));
@@ -21,7 +26,7 @@ Napi::Object Transport::Init(Napi::Env env, Napi::Object exports) {
 }
 
 Transport::Transport(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Transport>(info) {
-	//Napi::Env env = info.Env();
+	// Napi::Env env = info.Env();
 }
 
 Napi::Value Transport::GetBPM(const Napi::CallbackInfo &info) {
@@ -32,23 +37,36 @@ void Transport::SetBPM(const Napi::CallbackInfo &info, const Napi::Value &value)
 	this->bpm = value.As<Napi::Number>().Int32Value();
 }
 
-Napi::Value Transport::GetTracks(const Napi::CallbackInfo &info) {
-	return this->tracksRef.Value();
+Napi::Value Transport::GetMasterTrack(const Napi::CallbackInfo &info) {
+	return this->masterTrackRef.Value();
 }
 
-void Transport::SetTracks(const Napi::CallbackInfo &info, const Napi::Value &value) {
-	this->tracksRef = Napi::Reference<Napi::Array>::New(value.As<Napi::Array>(), 1);
+void Transport::SetMasterTrack(const Napi::CallbackInfo &info, const Napi::Value &value) {
+	Napi::Object obj = value.As<Napi::Object>();
+	Track *track = Track::Unwrap(obj);
+	track->setTransport(this);
+	this->masterTrack = track;
+	if (!this->masterTrackRef.IsEmpty()) this->masterTrackRef.Unref();
+	this->masterTrackRef = Napi::Reference<Napi::Object>::New(obj, 1);
+}
 
-	this->tracks.clear();
-	for (unsigned int i = 0; i < this->tracksRef.Value().Length(); i++) {
-		Track *track = Track::Unwrap(this->tracksRef.Value().Get(i).As<Napi::Object>());
-		track->setTransport(this);
-		this->tracks.push_back(track);
-	}
+Napi::Value Transport::GetCueTrack(const Napi::CallbackInfo &info) {
+	return this->cueTrackRef.Value();
+}
+
+void Transport::SetCueTrack(const Napi::CallbackInfo &info, const Napi::Value &value) {
+	Napi::Object obj = value.As<Napi::Object>();
+	Track *track = Track::Unwrap(obj);
+	track->setTransport(this);
+	this->cueTrack = track;
+	if (!this->cueTrackRef.IsEmpty())
+		this->cueTrackRef.Unref();
+	this->cueTrackRef = Napi::Reference<Napi::Object>::New(obj, 1);
 }
 
 void Transport::Finalize(const Napi::Env env) {
-	if (activeTransport == this) activeTransport = nullptr;
+	if (activeTransport == this)
+		activeTransport = nullptr;
 }
 
 Napi::Value setActiveTransport(const Napi::CallbackInfo &info) {
@@ -66,20 +84,20 @@ int Transport::loop(double *outputBuffer, double *inputBuffer, unsigned int nBuf
 		const double from = streamTime + i * sampleduration;
 		const double to = streamTime + (i + 1) * sampleduration;
 		if (fmod(from, bps) > fmod(to, bps)) {
-			std::cout << "beat" << std::endl;
+			//std::cout << "beat" << std::endl;
 		}
 	}
 
-	memset(outputBuffer, 0, sizeof(double) * nBufferFrames * 2); // TODO: hardcoded channel count
+	memset(outputBuffer, 0,
+	       sizeof(double) * nBufferFrames * 2); // TODO: hardcoded channel count
 
 	// for (sf_count_t frame = 0; frame < nBufferFrames; frame++) {
 	// 	for (int channel = 0; channel < 2; channel++) { // TODO: hardcoded channel count
 	// 	}
 	// }
 
-	for (const auto &track : tracks) {
-		track->process(outputBuffer, inputBuffer, nBufferFrames);
-	}
+	if (masterTrack) masterTrack->process(outputBuffer, inputBuffer, nBufferFrames);
+	if (cueTrack) cueTrack->process(outputBuffer, inputBuffer, nBufferFrames);
 
 	frameCount += nBufferFrames;
 

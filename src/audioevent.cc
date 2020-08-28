@@ -3,8 +3,8 @@
 
 Napi::Object AudioEvent::Init(Napi::Env env, Napi::Object exports) {
 	exports.Set(
-	    "AudioEvent",
-	    DefineClass(env, "AudioEvent",
+	    "NativeAudioEvent",
+	    DefineClass(env, "NativeAudioEvent",
 	                {
 	                    InstanceAccessor("name", &AudioEvent::GetName, &AudioEvent::SetName),
 	                    InstanceAccessor("lastFrameOffset", &AudioEvent::GetLastFrameOffset, nullptr),
@@ -68,7 +68,7 @@ int AudioEvent::render(double *outputBuffer, double *inputBuffer, unsigned int n
 		};
 	}
 
-	this->lastFrameOffset = nOffsetFrames;
+	this->lastFrameOffset = nOffsetFrames + nBufferFrames;
 
 	return 0;
 }

@@ -30,6 +30,8 @@ class Track : public Napi::ObjectWrap<Track> {
 	static Napi::Object Init(Napi::Env env, Napi::Object exports);
 
 	Track(const Napi::CallbackInfo &info);
+	virtual ~Track();
+	virtual void Finalize(Napi::Env env) override;
 
 	void playAudioEvent(AudioEvent *e);
 	Napi::Value JS_playAudioEvent(const Napi::CallbackInfo &info);
@@ -42,21 +44,38 @@ class Track : public Napi::ObjectWrap<Track> {
 		this->transport = transport;
 	}
 
+	double volume = 1;
+
   protected:
-	unsigned int numChannels;
-	std::string name;
+	unsigned int numChannels = 2;
+	std::string name = "";
 	ScheduledTrackEvent *trackEvents = nullptr;
-	Transport *transport;
+	Transport *transport = nullptr;
+
+	std::vector<Napi::ObjectReference> subTrackRefs;
+	std::vector<Track *> subTracks;
+
+	double levels[2] = {0, 0};
+
+	unsigned int bufferSize = 0;
+	double *outputBuffer = nullptr;
 
   private:
 	std::vector<unsigned int> inputChannels, outputChannels;
 	Napi::Value GetName(const Napi::CallbackInfo &info);
 	void SetName(const Napi::CallbackInfo &info, const Napi::Value &value);
+	Napi::Value GetVolume(const Napi::CallbackInfo &info);
+	void SetVolume(const Napi::CallbackInfo &info, const Napi::Value &value);
 
 	Napi::Value GetInputChannels(const Napi::CallbackInfo &info);
 	void SetInputChannels(const Napi::CallbackInfo &info, const Napi::Value &value);
 	Napi::Value GetOutputChannels(const Napi::CallbackInfo &info);
 	void SetOutputChannels(const Napi::CallbackInfo &info, const Napi::Value &value);
+	Napi::Value GetLevels(const Napi::CallbackInfo &info);
+
+	Napi::Value GetSubTracks(const Napi::CallbackInfo &info);
+	Napi::Value AddSubTrack(const Napi::CallbackInfo &info);
+	Napi::Value RemoveSubTrack(const Napi::CallbackInfo &info);
 
 	void scheduleTrackEvent(const ScheduledTrackEvent &e);
 	void cleanupScheduledTrackEvents();
