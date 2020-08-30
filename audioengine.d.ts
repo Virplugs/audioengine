@@ -17,12 +17,22 @@ type DeviceInfo = Record<string, {
 		sampleRates: number[];
 		nativeFormats: Array<"SINT8" | "SINT16" | "SINT24" | "SINT32" | "FLOAT32" | "FLOAT64">;
 	}>
-}>
+}>;
+
+type FileInfo = {
+	filename: string;
+	channels: number;
+	samplerate: number;
+	frames: number;
+	sections: number;
+	seekable: boolean;
+	format: number;
+};
 
 export function getDeviceInfo(): DeviceInfo;
-export function openAsioControlPanel(): any;
-export function readAudioFileInfo(filename: string, callback: (err, info) => void): any;
-export function readAudioFileWaveform(filename: string, window: number, callback: (err, data) => void): WaveformOverview;
+export function openAsioControlPanel(): void;
+export function readAudioFileInfo(filename: string, callback: (err: any, info: FileInfo) => void): void;
+export function readAudioFileWaveform(filename: string, window: number, callback: (err: any, data: WaveformOverview[]) => void): void;
 export function requestLatencyInfo(): { input: number, output: number, total: number, samplerate: number };
 export function setEventsCallback(callback: (name: string, data: any) => void): any;
 export function startAudioEngine(api: string, inputDeviceId: number, outputDeviceId: number, samplerate: number, bufferFrames: number): boolean;
