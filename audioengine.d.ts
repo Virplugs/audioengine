@@ -1,7 +1,28 @@
-export function getDeviceInfo(): any;
+type WaveformOverview = Array<{
+	max: number;
+	min: number;
+}>;
+
+type DeviceInfo = Record<string, {
+	displayName: string;
+	numDevices: number;
+	devices: Array<{
+		name: string;
+		outputChannels: number;
+		inputChannels: number;
+		duplexChannels: number;
+		isDefaultInput: boolean;
+		isDefaultOutput: boolean;
+		preferredSampleRate: number;
+		sampleRates: number[];
+		nativeFormats: Array<"SINT8" | "SINT16" | "SINT24" | "SINT32" | "FLOAT32" | "FLOAT64">;
+	}>
+}>
+
+export function getDeviceInfo(): DeviceInfo;
 export function openAsioControlPanel(): any;
 export function readAudioFileInfo(filename: string, callback: (err, info) => void): any;
-export function readAudioFileWaveform(filename: string, window: number, callback: (err, data) => void): any;
+export function readAudioFileWaveform(filename: string, window: number, callback: (err, data) => void): WaveformOverview;
 export function requestLatencyInfo(): { input: number, output: number, total: number, samplerate: number };
 export function setEventsCallback(callback: (name: string, data: any) => void): any;
 export function startAudioEngine(api: string, inputDeviceId: number, outputDeviceId: number, samplerate: number, bufferFrames: number): boolean;
@@ -11,8 +32,8 @@ export function setActiveTransport(transport: NativeTransport);
 declare class NativeTransport {
 	constructor();
 	bpm: number;
-	readonly masterTrack: NativeTrack;
-	readonly cueTrack: NativeTrack;
+	masterTrack: NativeTrack;
+	cueTrack: NativeTrack;
 }
 
 declare class NativeTrack {
