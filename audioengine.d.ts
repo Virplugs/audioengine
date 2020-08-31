@@ -29,6 +29,17 @@ type FileInfo = {
 	format: number;
 };
 
+type TimingInfo = {
+	projectTimeSamples: number;
+	projectTimeMusic: number;
+	projectTimeMusicBars: number;
+	barPositionMusic: number;
+	tempo: number;
+	timeSigNumerator: number;
+	timeSigDenominator: number;
+	samplerate: number;
+};
+
 export function getDeviceInfo(): DeviceInfo;
 export function openAsioControlPanel(): void;
 export function readAudioFileInfo(filename: string, callback: (err: any, info: FileInfo) => void): void;
@@ -44,6 +55,12 @@ declare class NativeTransport {
 	bpm: number;
 	masterTrack: NativeTrack;
 	cueTrack: NativeTrack;
+	readonly isPlaying: boolean;
+	readonly timingInfo: TimingInfo;
+	readonly totalRuntimeSamples: number;
+	start();
+	stop();
+	setTimeInSamples(time: number);
 }
 
 declare class NativeTrack {
@@ -51,7 +68,7 @@ declare class NativeTrack {
 	inputChannels: number[];
 	outputChannels: number[];
 	constructor(name: string, inputChannels: number[], outputChannels: number[]);
-	playAudioEvent(event: NativeAudioEvent);
+	playAudioEvent(event: NativeAudioEvent, time?: number);
 	stopAudioEvent(event: NativeAudioEvent);
 	readonly subTracks: NativeTrack[];
 	addSubTrack(track: NativeTrack, index?: Number);

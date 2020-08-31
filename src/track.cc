@@ -116,18 +116,24 @@ void Track::SetOutputChannels(const Napi::CallbackInfo &info, const Napi::Value 
 
 Napi::Value Track::JS_playAudioEvent(const Napi::CallbackInfo &info) {
 	if (this->transport == nullptr) {
-		Napi::TypeError::New(info.Env(), "Track has no transport linked").ThrowAsJavaScriptException();
+		Napi::TypeError::New(info.Env(), "Track has no transport linked")
+		    .ThrowAsJavaScriptException();
 		return info.Env().Undefined();
 	}
-	auto s = ScheduledTrackEvent(transport->frameCount + 256,
-	                             AudioEvent::Unwrap(info[0].As<Napi::Object>()),
+	unsigned long long time = transport->timingInfo.projectTimeSamples;
+	if (info.Length() >= 2 && info[1].IsNumber()) {
+		time = info[1].As<Napi::Number>().Int64Value();
+	}
+
+	auto s = ScheduledTrackEvent(time, AudioEvent::Unwrap(info[0].As<Napi::Object>()),
 	                             info[0].As<Napi::Object>(), true);
 	this->scheduleTrackEvent(s);
 	return info.Env().Undefined();
 }
 
 void Track::playAudioEvent(AudioEvent *e) {
-	this->scheduleTrackEvent(ScheduledTrackEvent(transport->frameCount + 256, e, true));
+	this->scheduleTrackEvent(
+	    ScheduledTrackEvent(transport->timingInfo.projectTimeSamples + 256, e, true));
 }
 
 Napi::Value Track::JS_stopAudioEvent(const Napi::CallbackInfo &info) {
@@ -176,7 +182,7 @@ void Track::cleanupScheduledTrackEvents() {
 
 	// find the first event that should be playing
 	while (currentTrackEvent != nullptr) {
-		if (transport->frameCount >
+		if (transport->timingInfo.projectTimeSamples >
 		    currentTrackEvent->time + currentTrackEvent->event->totalFrames) {
 			// this is a trackevent that has been done playing
 			if (currentTrackEvent->triggerOnce) {
@@ -200,10 +206,36 @@ void Track::cleanupScheduledTrackEvents() {
 	}
 }
 
+void Track::recursiveRemoveOneshotTrackEvents() {
+	ScheduledTrackEvent *currentTrackEvent = this->trackEvents;
+
+	// find the first event that should be playing
+	while (currentTrackEvent != nullptr) {
+		if (currentTrackEvent->triggerOnce) {
+			if (currentTrackEvent->prev != nullptr)
+				currentTrackEvent->prev->next = currentTrackEvent->next;
+			else
+				this->trackEvents = currentTrackEvent->next;
+			if (currentTrackEvent->next != nullptr)
+				currentTrackEvent->next->prev = currentTrackEvent->prev;
+			ScheduledTrackEvent *old = currentTrackEvent;
+			currentTrackEvent = currentTrackEvent->next;
+			if (this->trackEvents == old) {
+				this->trackEvents = currentTrackEvent->next;
+			}
+			delete old;
+		}
+	}
+
+	for (auto track : this->subTracks) {
+		track->recursiveRemoveOneshotTrackEvents();
+	}
+}
+
 Napi::Value Track::GetLevels(const Napi::CallbackInfo &info) {
 	Napi::Array arr = Napi::Array::New(info.Env(), 2);
-	arr[(uint32_t) 0] = Napi::Number::New(info.Env(), levels[0]);
-	arr[(uint32_t) 1] = Napi::Number::New(info.Env(), levels[1]);
+	arr[(uint32_t)0] = Napi::Number::New(info.Env(), levels[0]);
+	arr[(uint32_t)1] = Napi::Number::New(info.Env(), levels[1]);
 	return arr;
 }
 
@@ -277,12 +309,13 @@ Napi::Value Track::GetSubTracks(const Napi::CallbackInfo &info) {
 	return arr;
 }
 
-int Track::process(double *outputBuffer, double *inputBuffer, unsigned int nBufferFrames) {
+int Track::process(double *outputBuffer, double *inputBuffer, unsigned int nBufferFrames,
+                   TimingInfo &ti) {
 	// unsigned int sampleRate = dac->getStreamSampleRate();
 
 	if (this->bufferSize < nBufferFrames) {
-		this->outputBuffer = (double*)realloc(this->outputBuffer,
-		                          sizeof(double) * this->numChannels * nBufferFrames);
+		this->outputBuffer = (double *)realloc(this->outputBuffer,
+		                                       sizeof(double) * this->numChannels * nBufferFrames);
 		this->bufferSize = nBufferFrames;
 	}
 	memset(this->outputBuffer, 0, sizeof(double) * this->numChannels * nBufferFrames);
@@ -291,18 +324,19 @@ int Track::process(double *outputBuffer, double *inputBuffer, unsigned int nBuff
 
 	// find the first event that should be playing
 	while (currentTrackEvent != nullptr &&
-	       transport->frameCount >
+	       ti.projectTimeSamples >
 	           currentTrackEvent->time + currentTrackEvent->event->totalFrames) {
 		currentTrackEvent = currentTrackEvent->next;
 	}
 	while (currentTrackEvent != nullptr &&
-	       transport->frameCount <
+	       ti.projectTimeSamples + nBufferFrames >= currentTrackEvent->time &&
+	       ti.projectTimeSamples <
 	           currentTrackEvent->time + currentTrackEvent->event->totalFrames) {
 		double *eventOutputBuffer = this->outputBuffer;
 		double *eventInputBuffer = inputBuffer;
 		unsigned int eventNBufferFrames = nBufferFrames;
 
-		long nOffsetFrames = transport->frameCount - currentTrackEvent->time;
+		long nOffsetFrames = ti.projectTimeSamples - currentTrackEvent->time;
 		if (nOffsetFrames < 0) {
 			eventNBufferFrames += nOffsetFrames;
 			eventOutputBuffer += (2 * -nOffsetFrames);
@@ -317,7 +351,7 @@ int Track::process(double *outputBuffer, double *inputBuffer, unsigned int nBuff
 	}
 
 	for (auto subTrack : subTracks) {
-		subTrack->process(this->outputBuffer, inputBuffer, nBufferFrames);
+		subTrack->process(this->outputBuffer, inputBuffer, nBufferFrames, ti);
 	}
 
 	double levels[2] = {0, 0};

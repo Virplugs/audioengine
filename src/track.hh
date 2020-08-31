@@ -38,8 +38,9 @@ class Track : public Napi::ObjectWrap<Track> {
 	void stopAudioEvent(AudioEvent *e);
 	Napi::Value JS_stopAudioEvent(const Napi::CallbackInfo &info);
 
-	int process(double *outputBuffer, double *inputBuffer, unsigned int nBufferFrames);
+	int process(double *outputBuffer, double *inputBuffer, unsigned int nBufferFrames, TimingInfo &ti);
 
+	void recursiveRemoveOneshotTrackEvents();
 	inline void setTransport(Transport *transport) {
 		this->transport = transport;
 	}
