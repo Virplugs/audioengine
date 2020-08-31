@@ -25,6 +25,6 @@
     "chalk": "^4.1.0",
     "eslint": "^7.7.0",
     "glob": "^7.1.6",
-    "@virplugs/license-checker": "github:virplugs/license-checker#master"
+    "@virplugs/license-checker": "github:virplugs/license-checker"
   }
 }
