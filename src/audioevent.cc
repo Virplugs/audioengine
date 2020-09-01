@@ -68,6 +68,8 @@ int AudioEvent::render(double *outputBuffer, double *inputBuffer, unsigned int n
 		};
 	}
 
+	free(buf);
+
 	this->lastFrameOffset = nOffsetFrames + nBufferFrames;
 
 	return 0;
