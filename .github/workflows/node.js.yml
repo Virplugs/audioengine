@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     strategy:
       matrix:
@@ -23,9 +23,14 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: |
-        sudo apt-get install -y libjack-dev libasound2-dev
-        npm ci
-    - run: npm run lint
+    - run: npm ci
+    #- run: npm run lint
+    - name: ESLint
+      uses: Krizzu/eslint-check-action@v1.1.0
+      with:
+        ghToken: ${{ secrets.GITHUB_TOKEN }}
+        eslintFiles: "."
+        eslintConfig: ".eslintrc.json"
+        eslintExt: "js, ts, tsx"
     - run: npm run build
     - run: npm run test
