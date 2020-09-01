@@ -1,12 +1,21 @@
 {
-    "parserOptions": {
+	"root": true,
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
         "ecmaVersion": 8
     },
     "env": {
         "es6": true,
         "node": true
     },
-    "extends": "eslint:recommended",
+	"plugins": [
+		"@typescript-eslint"
+	],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended"
+	],
     "ignorePatterns": "*.min.js",
     "rules": {
         "indent": ["warn", "tab", {
@@ -42,6 +51,7 @@
         "comma-dangle": [
             "warn",
             "only-multiline"
-        ]
+        ],
+		"@typescript-eslint/no-var-requires": 0
     }
 }

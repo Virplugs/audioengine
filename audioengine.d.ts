@@ -71,7 +71,7 @@ declare class NativeTrack {
 	playAudioEvent(event: NativeAudioEvent, time?: number);
 	stopAudioEvent(event: NativeAudioEvent);
 	readonly subTracks: NativeTrack[];
-	addSubTrack(track: NativeTrack, index?: Number);
+	addSubTrack(track: NativeTrack, index?: number);
 	removeSubTrack(track: NativeTrack);
 	readonly levels: number[];
 	volume: number;

@@ -1,4 +1,4 @@
-var addon = require('bindings')('virplugs-audioengine');
+const addon = require('.');
 
 console.dir(addon, { depth: null });
 
