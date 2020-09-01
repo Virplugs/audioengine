@@ -58,8 +58,7 @@
 
         'conditions': [
           ['OS=="linux"', {
-              #'defines': [ '__UNIX_JACK__', '__LINUX_ALSA__' ]
-              'defines': [  '__LINUX_ALSA__' ]
+              'defines': [ '__UNIX_JACK__', '__LINUX_ALSA__' ]
           }],
           ['OS=="win"', {
               'defines': [ '__WINDOWS_ASIO__', '__WINDOWS_WASAPI__', '__WINDOWS_DS__' ],
