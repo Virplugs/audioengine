@@ -52,6 +52,7 @@ jobs:
         node-version: 12.x
         
     - run: |
+        sudo apt-get install -y libjack-dev libasound2-dev
         npm ci
 
     # ℹ️ Command-line programs to run using the OS shell.
