@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     strategy:
       matrix:
@@ -23,7 +23,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci --no-progress
-    - run: npm run lint
+    - run: npm ci
+    #- run: npm run lint
+    - name: ESLint
+      uses: a-b-r-o-w-n/eslint-action@v1.2.0
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        files: src/**/*
     - run: npm run build
     - run: npm run test
