@@ -14,7 +14,7 @@
   },
   "types": "./audioengine.d.ts",
   "scripts": {
-    "postinstall": "virplugs-check-licenses",
+    "prepare": "virplugs-check-licenses",
     "test": "node test.js",
     "build": "node-gyp rebuild",
     "build:debug": "node-gyp rebuild --debug",
