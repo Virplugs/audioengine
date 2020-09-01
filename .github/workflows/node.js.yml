@@ -26,11 +26,9 @@ jobs:
     - run: npm ci
     #- run: npm run lint
     - name: ESLint
-      uses: Krizzu/eslint-check-action@v1.1.0
+      uses: a-b-r-o-w-n/eslint-action@v1.2.0
       with:
-        ghToken: ${{ secrets.GITHUB_TOKEN }}
-        eslintFiles: "."
-        eslintConfig: ".eslintrc.json"
-        eslintExt: "js, ts, tsx"
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        files: src/**/*
     - run: npm run build
     - run: npm run test
