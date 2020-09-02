@@ -14,6 +14,7 @@ struct ScheduledTrackEvent {
 	                    const Napi::Object &JSAudioEvent, bool triggerOnce = false);
 	ScheduledTrackEvent(unsigned long long time, AudioEvent *event, bool triggerOnce = false);
 	ScheduledTrackEvent(const ScheduledTrackEvent &);
+	ScheduledTrackEvent &operator=(const ScheduledTrackEvent &) = delete;
 
 	~ScheduledTrackEvent();
 
@@ -30,6 +31,7 @@ class Track : public Napi::ObjectWrap<Track> {
 	static Napi::Object Init(Napi::Env env, Napi::Object exports);
 
 	Track(const Napi::CallbackInfo &info);
+	Track &operator=(const Track &) = delete;
 	virtual ~Track();
 	virtual void Finalize(Napi::Env env) override;
 
