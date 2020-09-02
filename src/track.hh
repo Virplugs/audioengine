@@ -31,6 +31,7 @@ class Track : public Napi::ObjectWrap<Track> {
 	static Napi::Object Init(Napi::Env env, Napi::Object exports);
 
 	Track(const Napi::CallbackInfo &info);
+	Track(const Track &) = delete;
 	Track &operator=(const Track &) = delete;
 	virtual ~Track();
 	virtual void Finalize(Napi::Env env) override;
