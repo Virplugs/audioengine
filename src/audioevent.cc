@@ -56,7 +56,7 @@ int AudioEvent::render(double *outputBuffer, double *inputBuffer, unsigned int n
                        unsigned int nOffsetFrames) {
 	sf_seek(infile, nOffsetFrames, SEEK_SET);
 
-	float *buf = (float *)malloc(sizeof(float) * nBufferFrames * sfinfo.channels);
+	float *buf = new float[nBufferFrames * sfinfo.channels];
 	sf_count_t readcount;
 
 	if ((readcount = sf_readf_float(infile, buf, nBufferFrames)) > 0) {
@@ -68,7 +68,7 @@ int AudioEvent::render(double *outputBuffer, double *inputBuffer, unsigned int n
 		};
 	}
 
-	free(buf);
+	delete[] buf;
 
 	this->lastFrameOffset = nOffsetFrames + nBufferFrames;
 
