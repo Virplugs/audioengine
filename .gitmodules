@@ -4,3 +4,6 @@
 [submodule "deps/libsndfile"]
 	path = deps/libsndfile
 	url = https://github.com/Virplugs/libsndfile
+[submodule "deps/rtaudio"]
+	path = deps/rtaudio
+	url = https://github.com/Virplugs/rtaudio
