@@ -30,6 +30,7 @@ jobs:
         # We must fetch at least the immediate parents so that if this is
         # a pull request then we can checkout the head.
         fetch-depth: 2
+        submodules: 'recursive'
 
     # If this run was triggered by a pull request event, then checkout
     # the head of the pull request instead of the merge commit.
@@ -50,7 +51,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 12.x
-        
+
     - run: |
         sudo apt-get install -y libjack-dev libasound2-dev
         npm ci
