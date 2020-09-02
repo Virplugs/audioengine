@@ -1,3 +1,6 @@
 [submodule "deps/vst3sdk"]
 	path = deps/vst3sdk
 	url = https://github.com/steinbergmedia/vst3sdk
+[submodule "deps/libsndfile"]
+	path = deps/libsndfile
+	url = https://github.com/Virplugs/libsndfile
