@@ -1,16 +1,20 @@
 #include "audioevent.hh"
 #include "track.hh"
 
+#include <cmath>
+
 Napi::Object AudioEvent::Init(Napi::Env env, Napi::Object exports) {
 	exports.Set(
 	    "NativeAudioEvent",
-	    DefineClass(env, "NativeAudioEvent",
-	                {
-	                    InstanceAccessor("name", &AudioEvent::GetName, &AudioEvent::SetName),
-	                    InstanceAccessor("lastFrameOffset", &AudioEvent::GetLastFrameOffset, nullptr),
-	                    InstanceAccessor("duration", &AudioEvent::GetDuration, nullptr),
-	                    InstanceAccessor("totalFrames", &AudioEvent::GetTotalFrames, nullptr),
-	                }));
+	    DefineClass(
+	        env, "NativeAudioEvent",
+	        {
+	            InstanceAccessor("name", &AudioEvent::GetName, &AudioEvent::SetName),
+	            InstanceAccessor("lastFrameOffset", &AudioEvent::GetLastFrameOffset, nullptr),
+	            InstanceAccessor("duration", &AudioEvent::GetDuration, nullptr),
+	            InstanceAccessor("totalFrames", &AudioEvent::GetTotalFrames, nullptr),
+	            InstanceAccessor("gain", &AudioEvent::GetGain, &AudioEvent::SetGain),
+	        }));
 
 	return exports;
 }
@@ -63,7 +67,7 @@ int AudioEvent::render(double *outputBuffer, double *inputBuffer, unsigned int n
 		for (sf_count_t frame = 0; frame < readcount; frame++) {
 			for (int channel = 0; channel < sfinfo.channels; channel++) {
 				const float val = buf[frame * sfinfo.channels + channel];
-				outputBuffer[frame * sfinfo.channels + channel] += val;
+				outputBuffer[frame * sfinfo.channels + channel] += fmax(-1.0, fmin(1.0, val * this->gain));
 			}
 		};
 	}
@@ -85,4 +89,12 @@ Napi::Value AudioEvent::GetDuration(const Napi::CallbackInfo &info) {
 
 Napi::Value AudioEvent::GetTotalFrames(const Napi::CallbackInfo &info) {
 	return Napi::Number::New(info.Env(), this->totalFrames);
+}
+
+Napi::Value AudioEvent::GetGain(const Napi::CallbackInfo &info) {
+	return Napi::Number::New(info.Env(), this->gain);
+}
+
+void AudioEvent::SetGain(const Napi::CallbackInfo &info, const Napi::Value &value) {
+	this->gain = value.As<Napi::Number>().DoubleValue();
 }

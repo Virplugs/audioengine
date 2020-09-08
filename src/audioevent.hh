@@ -18,6 +18,7 @@ class AudioEvent : public Napi::ObjectWrap<AudioEvent> {
 	  double duration = 0.0;
 	  unsigned long totalFrames = 1;
 	  unsigned long lastFrameOffset = 0;
+	  double gain = 1.0;
 
 	protected:
 	  std::string name, filename;
@@ -28,6 +29,8 @@ class AudioEvent : public Napi::ObjectWrap<AudioEvent> {
 	  Napi::Value GetLastFrameOffset(const Napi::CallbackInfo &info);
 	  Napi::Value GetDuration(const Napi::CallbackInfo &info);
 	  Napi::Value GetTotalFrames(const Napi::CallbackInfo &info);
+	  Napi::Value GetGain(const Napi::CallbackInfo &info);
+	  void SetGain(const Napi::CallbackInfo &info, const Napi::Value &value);
 
 	  SF_INFO sfinfo;
 	  SNDFILE *infile = NULL;

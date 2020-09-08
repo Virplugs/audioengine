@@ -82,5 +82,6 @@ declare class NativeAudioEvent {
 	readonly lastFrameOffset: number;
 	readonly duration: number;
 	readonly totalFrames: number;
+	gain: number;
 	constructor(name: string, filename: string);
 }
