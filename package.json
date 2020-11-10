@@ -24,7 +24,7 @@
 	"gypfile": true,
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^4.0.1",
-		"@typescript-eslint/parser": "^4.0.1",
+		"@typescript-eslint/parser": "^4.7.0",
 		"@virplugs/license-checker": "github:virplugs/license-checker",
 		"chalk": "^4.1.0",
 		"eslint": "^7.8.1",
